@@ -30,6 +30,48 @@ subtest('docomo', function () {
     is(ma.getUserAgent(), 'DoCoMo/1.0/D501i');
     is(ma.getUserID(), 'abcdef0');
 });
+subtest('docomo/parse/mova', function () {
+    var ma = getMobileAgent({
+        'user-agent': "DoCoMo/1.0/D501i",
+    });
+    is(ma.getModel(), 'D501i');
+    is(ma.getBrowserVersion(), '1.0');
+});
+subtest('docomo/parse/crawller', function () {
+    var ma = getMobileAgent({
+        'user-agent': "DoCoMo/1.0/P209is (Google CHTML Proxy/1.0)"
+    });
+    is(ma.getModel(), 'P209is');
+    is(ma.getCacheSize(), 5);
+    is(ma.getComment(), "Google CHTML Proxy/1.0");
+    is(ma.getBrowserVersion(), '1.0');
+});
+subtest('docomo/parse/mova/D502i', function () {
+    var ma = getMobileAgent({
+        'user-agent': "DoCoMo/1.0/D502i/c10"
+    });
+    is(ma.getModel(), 'D502i');
+    is(ma.getCacheSize(), '10');
+    is(ma.getBrowserVersion(), '1.0');
+});
+subtest('docomo/parse/foma', function () {
+(function () {
+    var ma = getMobileAgent({
+        'user-agent': "DoCoMo/2.0 N2001(c10;ser0123456789abcde;icc01234567890123456789)",
+    });
+    is(ma.getModel(), 'N2001');
+    is(ma.getCacheSize(), '10');
+    is(ma.getDisplayBytes(), undefined);
+    is(ma.getBrowserVersion(), '1.0');
+})();
+(function () {
+    var ma = getMobileAgent({
+        'user-agent': "DoCoMo/2.0 N06A3(c500;TB;W24H16)",
+    });
+    is(ma.getDisplayBytes(), '24x16');
+    is(ma.getBrowserVersion(), '2.0');
+})();
+});
 subtest('au', function () {
     var ma = getMobileAgent({
         'user-agent': 'UP.Browser/3.01-HI01 UP.Link/3.4.5.2',
