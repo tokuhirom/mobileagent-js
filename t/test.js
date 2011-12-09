@@ -17,7 +17,10 @@ var is = QUnit.equal,
     ;
 
 subtest('docomo', function () {
-    var ma = getMobileAgent({'user-agent': "DoCoMo/1.0/D501i"});
+    var ma = getMobileAgent({
+        'user-agent': "DoCoMo/1.0/D501i",
+        'x-dcmguid': 'abcdef0',
+    });
     ok(ma.is_docomo());
     ok(!ma.is_ezweb());
     ok(!ma.is_softbank());
@@ -25,18 +28,26 @@ subtest('docomo', function () {
     ok(!ma.is_non_mobile());
     is(ma.getCarrierLongName(), 'DoCoMo');
     is(ma.getUserAgent(), 'DoCoMo/1.0/D501i');
+    is(ma.getUserID(), 'abcdef0');
 });
 subtest('au', function () {
-    var ma = getMobileAgent({'user-agent': 'UP.Browser/3.01-HI01 UP.Link/3.4.5.2'});
+    var ma = getMobileAgent({
+        'user-agent': 'UP.Browser/3.01-HI01 UP.Link/3.4.5.2',
+        'x-up-subno': 'abcdef0123_45.ezweb.ne.jp'
+    });
     ok(!ma.is_docomo());
     ok(ma.is_ezweb());
     ok(!ma.is_softbank());
     ok(!ma.is_airh_phone());
     ok(!ma.is_non_mobile());
     is(ma.getCarrierLongName(), 'EZweb');
+    is(ma.getUserID(), 'abcdef0123_45.ezweb.ne.jp');
 });
 subtest('softbank', function () {
-    var ma = getMobileAgent({'user-agent': 'J-PHONE/2.0/J-DN02'});
+    var ma = getMobileAgent({
+        'user-agent': 'J-PHONE/2.0/J-DN02',
+        'x-jphone-uid': 'abcdef0123456789'
+    });
     ok(!ma.is_docomo());
     ok(!ma.is_ezweb());
     ok(ma.is_softbank());

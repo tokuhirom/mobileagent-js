@@ -65,6 +65,7 @@ $E(MobileAgentDoCoMo, MobileAgentBase, {
     is_docomo: function () { return true; },
     getCarrier: function () { return 'I'; },
     getCarrierLongName: function () { return 'DoCoMo'; },
+    getUserID: function () { return this.request['x-dcmguid']; },
 });
 
 function MobileAgentSoftBank(req) {
@@ -74,6 +75,7 @@ $E(MobileAgentSoftBank, MobileAgentBase, {
     is_softbank: function () { return true; },
     getCarrier: function () { return 'V'; },
     getCarrierLongName: function () { return 'SoftBank'; },
+    getUserID: function () { return this.request['x-jphone-uid']; },
 });
 
 function MobileAgentEZWeb(req) {
@@ -83,6 +85,7 @@ $E(MobileAgentEZWeb, MobileAgentBase, {
     is_ezweb: function () { return true; },
     getCarrier: function () { return 'E'; },
     getCarrierLongName: function () { return 'EZweb'; },
+    getUserID: function () { return this.request['x-up-subno']; },
 });
 
 function MobileAgentAirHPhone(req) {
