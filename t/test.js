@@ -1,0 +1,3 @@
+subtest('au', function () {
+    MobileAgent();
+});
