@@ -1,11 +1,13 @@
 (function () {
 
-// requires: Object.keys, Array.prototype.forEach
-
 "use strict";
 
 var global = this;
 
+/**
+ * detect carrier letter from user agent string.
+ * If you don't want to get more information, you should use this function.
+ */
 var DoCoMoRE = /^DoCoMo\/\d\.\d[ \/]/;
 var JPhoneRE = /^(?:J-PHONE\/\d\.\d)/i;
 var VodafoneRE = /^Vodafone\/\d\.\d/;
@@ -35,16 +37,26 @@ function NoMatchError(ma) {
 }
 NoMatchError.prototype = new Error();
 
+/**
+ * MobileAgentBase
+ * @class Abstract base class for mobile agent.
+ */
 function MobileAgentBase(req) {
     this.request = req;
 }
 MobileAgentBase.prototype = {
+    // Is it a docomo phone?
     is_docomo:     function () { return false; },
+    // Is it a ezweb phone?
     is_ezweb:      function () { return false; },
+    // Is it a softbank phone?
     is_softbank:   function () { return false; },
+    // Is it a airh phone?
     is_airh_phone: function () { return false; },
+    // Is it a non mobile bwser?
     is_non_mobile: function () { return false; },
 
+    // Get a user agent string.
     getUserAgent: function () {
         return this.request['user-agent'];
     }
@@ -86,6 +98,10 @@ MobileAgentBase.makeProperties = function (obj, stuff) {
     }
 };
 
+/**
+ * MobileAgentDoCoMo
+ * @class Agent class for docomo phone
+ **/
 var MobileAgentDoCoMo = MobileAgentBase.extend({
     is_docomo: function () { return true; },
     getCarrier: function () { return 'I'; },
@@ -383,6 +399,10 @@ MobileAgentBase.makeProperties(MobileAgentSoftBank, {
     'getJavaInfo': 'java_info',
 });
 
+/**
+ * MobileAgentEZWeb
+ * @class Agent class for EZweb phone
+ **/
 var MobileAgentEZWeb = MobileAgentBase.extend({
     is_ezweb: function () { return true; },
     getCarrier: function () { return 'E'; },
@@ -413,18 +433,27 @@ MobileAgentBase.makeProperties(MobileAgentEZWeb, {
     'getName':     'name',
 });
 
+/**
+ * @class class for AirHPhone.
+ **/
 var MobileAgentAirHPhone = MobileAgentBase.extend({
     is_airh_phone: function () { return true; },
     getCarrier: function () { return 'H'; },
     getCarrierLongName: function () { return 'AirH'; },
 });
 
+/**
+ * @class agent class for non mobile.
+ **/
 var MobileAgentNonMobile = MobileAgentBase.extend({
     is_non_mobile: function () { return true; },
     getCarrier: function () { return 'N'; },
     getCarrierLongName: function () { return 'NonMobile'; },
 });
 
+/**
+ * @param req request object. It is normally node.js' HTTP request.
+ **/
 function getMobileAgent(req) {
     var ua = req['user-agent'],
         carrier = detectCarrier(ua);
@@ -451,4 +480,5 @@ if (typeof exports !== 'undefined') {
 }
 MA.getMobileAgent = getMobileAgent;
 MA.detectCarrier = detectCarrier;
+
 })();

@@ -1,23 +1,44 @@
-知識
-----
+mobileagent.js
+==============
+
+This is a port of Perl5's HTTP::MobileAgent for node.js.
+But this module can work on browsers.
+
+Usage
+------
+
+    var ma = require('mobileagent.js'),
+        http = require('http');
+
+    http.createServer(function (req, res) {
+        var ma = ma.getMobileAgent(req);
+
+        res.writeHead(200, {'Content-Type': 'text/plain'});
+        res.end('Hello ' + ma.getCarrierLongName() + '\n');
+    }).listen(1337, "127.0.0.1");
+    console.log('Server running at http://127.0.0.1:1337/');
+
+Currently, some methods are not documented. Please read a source.
+
+Knowledge
+---------
 
 EZweb
 ~~~~~
 
-現状、WAP2.0 非対応の端末は現在終了している。
-
+All phones supports WAP 2.0.
 http://www.au.kddi.com/ezfactory/tec/spec/new_win/ezkishu.html
 
 
-tu-ka は 2008-03-31 で終了している。
+tu-ka was ended at 2008-03-31.
 
 http://ja.wikipedia.org/wiki/%E3%83%84%E3%83%BC%E3%82%AB%E3%83%BC#au.E9.9B.BB.E8.A9.B1.E3.81.B8.E3.81.AE.E7.A7.BB.E8.A1.8C.E3.83.BB.E3.82.B5.E3.83.BC.E3.83.93.E3.82.B9.E7.B5.82.E4.BA.86.E3.81.B8
 
-HDML のみ対応の端末も終了している。
+All phones can display HTML.
 http://www.au.kddi.com/ezfactory/tec/spec/4_4.html
 
 SoftBank
 ~~~~~~~~
 
-packet_compliant かどうかという判定はもはや意味がない。
+packet_compliant flag was outdated.
 
