@@ -1,4 +1,8 @@
+(function () {
+
 "use strict";
+
+var global = this;
 
 var DoCoMoRE = /^DoCoMo\/\d\.\d[ \/]/;
 var JPhoneRE = /^(?:J-PHONE\/\d\.\d)/i;
@@ -90,8 +94,8 @@ $E(MobileAgentDoCoMo, MobileAgentBase, {
         if (this.parsed) {
             return;
         }
-        var ua = this.getUserAgent(),
-             x = ua.match(/^([^ ]+) (.+)$/);
+        var ua = this.getUserAgent();
+        var x = ua.match(/^([^ ]+) (.+)$/);
         // if ($foma_or_comment && $foma_or_comment =~ s/^\((.*)\)$/$1/) {
         if (x) {
             if (x[2].match(/^\(.*\)$/)) {
@@ -389,7 +393,7 @@ $E(MobileAgentEZWeb, MobileAgentBase, {
             return;
         }
         var ua = this.getUserAgent();
-        var matched = ua.match(/^KDDI\-([^ ]+) ([^ /]+)\/([^ ]+ [^ ]+) (.+)$/);
+        var matched = ua.match(/^KDDI\-([^ ]+) ([^ \/]+)\/([^ ]+ [^ ]+) (.+)$/);
         if (matched) {
             this.device_id = matched[1];
             this.name = matched[2];
@@ -444,6 +448,12 @@ function getMobileAgent(req) {
 }
 
 // export functions
-exports.getMobileAgent = getMobileAgent;
-exports.detectCarrier = detectCarrier;
-
+var MA;
+if (typeof exports !== 'undefined') {
+    MA = exports;
+} else {
+    MA = global.MobileAgent = {};
+}
+MA.getMobileAgent = getMobileAgent;
+MA.detectCarrier = detectCarrier;
+})();
