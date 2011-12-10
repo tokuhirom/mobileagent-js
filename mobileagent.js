@@ -1,5 +1,7 @@
 (function () {
 
+// requires: Object.keys, Array.prototype.forEach
+
 "use strict";
 
 var global = this;
