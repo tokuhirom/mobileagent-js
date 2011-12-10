@@ -1,3 +1,5 @@
+all: test
+
 test:
 	node t/test.js
 test-browser:
