@@ -28,37 +28,6 @@ function detectCarrier(ua) {
     }
 }
 
-function $E(a, b, c, d) {
-    var k, m;
-
-    a.super_ = b;
-    a.prototype = Object.create(b.prototype, {
-        constructor: {
-            value: a,
-            enumerable: false,
-            writable: true,
-            configurable: true
-        }
-    });
-    for (k in c) {
-        if (c.hasOwnProperty(k)) {
-            a.prototype[k] = c[k];
-        }
-    }
-    if (d) {
-        for (m in d) {
-            if (d.hasOwnProperty(m)) {
-                (function (m) {
-                    a.prototype[m] = function () {
-                        this._parse();
-                        return this[d[m]];
-                    };
-                })(m);
-            }
-        }
-    }
-}
-
 function NoMatchError(ma) {
     this.ma = ma;
 }
@@ -78,11 +47,44 @@ MobileAgentBase.prototype = {
         return this.request['user-agent'];
     }
 };
+MobileAgentBase.extend = function (c) {
+    function extend(orig, stuff) {
+        var keys = Object.keys(stuff);
+        for (var i=0, l=keys.length; i<l; i++) {
+            var key = keys[i];
+            orig[key] = stuff[key];
+        }
+        return orig;
+    }
+    function inherit(parent, c) {
+        var f = function (){
+            parent.apply(this, arguments);
+        };
+        extend(f.prototype, parent.prototype);
+        if (c) {
+            extend(f.prototype, c);
+        }
+        f.prototype.__super__ = parent.prototype;
+        f.prototype.__super__.constructor = parent;
+        f.prototype.constructor = c;
+        return f;
+    }
+    return inherit(this, c);
+};
+MobileAgentBase.makeProperties = function (obj, stuff) {
+    var keys = Object.keys(stuff);
+    for (var i=0, l=keys.length; i<l; i++) {
+        var key = keys[i];
+        (function (methodName, propName) {
+            obj.prototype[methodName] = function () {
+                this._parse();
+                return this[propName];
+            };
+        })(key, stuff[key]);
+    }
+};
 
-function MobileAgentDoCoMo(req) {
-    this.constructor.super_.apply(this, arguments);
-}
-$E(MobileAgentDoCoMo, MobileAgentBase, {
+var MobileAgentDoCoMo = MobileAgentBase.extend({
     is_docomo: function () { return true; },
     getCarrier: function () { return 'I'; },
     getCarrierLongName: function () { return 'DoCoMo'; },
@@ -190,7 +192,8 @@ $E(MobileAgentDoCoMo, MobileAgentBase, {
             });
         });
     }
-}, {
+});
+MobileAgentBase.makeProperties(MobileAgentDoCoMo, {
     getModel: 'model',
     isFOMA: 'is_foma',
     getCacheSize: 'cache_size',
@@ -199,10 +202,7 @@ $E(MobileAgentDoCoMo, MobileAgentBase, {
     getStatus: 'status',
 });
 
-function MobileAgentSoftBank(req) {
-    this.constructor.super_.apply(this, arguments);
-}
-$E(MobileAgentSoftBank, MobileAgentBase, {
+var MobileAgentSoftBank = MobileAgentBase.extend({
     is_softbank: function () { return true; },
     getCarrier: function () { return 'V'; },
     getCarrierLongName: function () { return 'SoftBank'; },
@@ -371,7 +371,8 @@ $E(MobileAgentSoftBank, MobileAgentBase, {
             this.type = 'W';
         }
     }
-}, {
+});
+MobileAgentBase.makeProperties(MobileAgentSoftBank, {
     'getName': 'name',
     'getVersion': 'version',
     'getModel': 'model',
@@ -380,10 +381,7 @@ $E(MobileAgentSoftBank, MobileAgentBase, {
     'getJavaInfo': 'java_info',
 });
 
-function MobileAgentEZWeb(req) {
-    this.constructor.super_.apply(this, arguments);
-}
-$E(MobileAgentEZWeb, MobileAgentBase, {
+var MobileAgentEZWeb = MobileAgentBase.extend({
     is_ezweb: function () { return true; },
     getCarrier: function () { return 'E'; },
     getCarrierLongName: function () { return 'EZweb'; },
@@ -405,26 +403,21 @@ $E(MobileAgentEZWeb, MobileAgentBase, {
         }
         this.parsed = true;
     }
-}, {
+});
+MobileAgentBase.makeProperties(MobileAgentEZWeb, {
     'getDeviceID': 'device_id',
-    'getVersion': 'version',
-    'getServer': 'server',
-    'getName': 'name',
+    'getVersion':  'version',
+    'getServer':   'server',
+    'getName':     'name',
 });
 
-function MobileAgentAirHPhone(req) {
-    this.constructor.super_.apply(this, arguments);
-}
-$E(MobileAgentAirHPhone, MobileAgentBase, {
+var MobileAgentAirHPhone = MobileAgentBase.extend({
     is_airh_phone: function () { return true; },
     getCarrier: function () { return 'H'; },
     getCarrierLongName: function () { return 'AirH'; },
 });
 
-function MobileAgentNonMobile(req) {
-    this.constructor.super_.apply(this, arguments);
-}
-$E(MobileAgentNonMobile, MobileAgentBase, {
+var MobileAgentNonMobile = MobileAgentBase.extend({
     is_non_mobile: function () { return true; },
     getCarrier: function () { return 'N'; },
     getCarrierLongName: function () { return 'NonMobile'; },
