@@ -1,8 +1,8 @@
-var ma = require('../mobileagent.js'),
+var MobileAgent = require('../mobileagent.js'),
     http = require('http');
 
 http.createServer(function (req, res) {
-    var ma = ma.getMobileAgent(req);
+    var ma = MobileAgent.getMobileAgent(req);
 
     res.writeHead(200, {'Content-Type': 'text/plain'});
     res.end('Hello ' + ma.getCarrierLongName() + '\n');

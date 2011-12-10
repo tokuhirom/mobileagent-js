@@ -455,19 +455,29 @@ var MobileAgentNonMobile = MobileAgentBase.extend({
  * @param req request object. It is normally node.js' HTTP request.
  **/
 function getMobileAgent(req) {
-    var ua = req['user-agent'],
-        carrier = detectCarrier(ua);
-    switch (carrier) {
+    var ua,
+        headers,
+        carrier;
+    if (typeof req === 'object') {
+        if ('headers' in req) {
+            headers = req['headers'];
+        } else {
+            headers = req;
+        }
+    } else {
+        headers = { 'user-agent': req }; // plain string
+    }
+    switch (detectCarrier(headers['user-agent'])) {
     case 'I':
-        return new MobileAgentDoCoMo(req);
+        return new MobileAgentDoCoMo(headers);
     case 'V':
-        return new MobileAgentSoftBank(req);
+        return new MobileAgentSoftBank(headers);
     case 'E':
-        return new MobileAgentEZWeb(req);
+        return new MobileAgentEZWeb(headers);
     case 'H':
-        return new MobileAgentAirHPhone(req);
+        return new MobileAgentAirHPhone(headers);
     default:
-        return new MobileAgentNonMobile(req);
+        return new MobileAgentNonMobile(headers);
     }
 }
 
