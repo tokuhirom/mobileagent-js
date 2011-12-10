@@ -1,11 +1,11 @@
 "use strict";
 
-var DoCoMoRE = /^DoCoMo\/\d\.\d[ /]/;
+var DoCoMoRE = /^DoCoMo\/\d\.\d[ \/]/;
 var JPhoneRE = /^(?:J-PHONE\/\d\.\d)/i;
 var VodafoneRE = /^Vodafone\/\d\.\d/;
 var VodafoneMotRE = /^MOT-/;
 var SoftBankRE = /^SoftBank\/\d\.\d/;
-var SoftBankCrawlerRE = /^Nokia[^/]+\/\d\.\d/;
+var SoftBankCrawlerRE = /^Nokia[^\/]+\/\d\.\d/;
 var EZwebRE  = /^(?:KDDI-[A-Z]+\d+[A-Z]? )?UP\.Browser\//;
 var AirHRE = /^Mozilla\/3\.0\((?:WILLCOM|DDIPOCKET)\;/;
 function detectCarrier(ua) {
@@ -90,8 +90,8 @@ $E(MobileAgentDoCoMo, MobileAgentBase, {
         if (this.parsed) {
             return;
         }
-        var ua = this.getUserAgent();
-        var x = ua.match(/^([^ ]+) (.+)$/);
+        var ua = this.getUserAgent(),
+             x = ua.match(/^([^ ]+) (.+)$/);
         // if ($foma_or_comment && $foma_or_comment =~ s/^\((.*)\)$/$1/) {
         if (x) {
             if (x[2].match(/^\(.*\)$/)) {
@@ -120,30 +120,31 @@ $E(MobileAgentDoCoMo, MobileAgentBase, {
         this.parsed = true;
     },
     _parseMain: function (ua) {
-        var parts = ua.split('/');
+        var parts = ua.split('/'),
+            self = this;
         this.name = parts[0];
         this.version = parts[1];
         this.model = parts[2];
-        if (this.model == 'SH505i2') {
+        if (this.model === 'SH505i2') {
             this.model = 'SH505i';
         }
 
-        var cache = parts[3];
-        var self = this;
-        if (cache) {
-            cache.replace(/^c(.+)/, function (x, y) {
-                self.cache_size = y;
-            });
-            if (!self.cache_size) {
-                throw new NoMatchError(this);
+        (function (cache) {
+            if (cache) {
+                cache.replace(/^c(.+)/, function (x, y) {
+                    self.cache_size = y;
+                });
+                if (!self.cache_size) {
+                    throw new NoMatchError(this);
+                }
             }
-        }
+            })(parts[3]);
         parts.slice(4).forEach(function (y) {
             var ss = [
-                [/^ser(\w{11})$/,  function (z) { self.serial_number = z[1] } ],
-                [/^(T[CDBJ])$/,    function (z) { self.status = z[1] } ],
-                [/^s(\d+)$/,       function (z) { self.serial_number = z[1] } ],
-                [/^W(\d+)H(\d+)$/, function (z) { self.display_bytes = z[1]+'*'+z[2] } ],
+                [/^ser(\w{11})$/,  function (z) { self.serial_number = z[1]; } ],
+                [/^(T[CDBJ])$/,    function (z) { self.status = z[1]; } ],
+                [/^s(\d+)$/,       function (z) { self.serial_number = z[1]; } ],
+                [/^W(\d+)H(\d+)$/, function (z) { self.display_bytes = z[1]+'*'+z[2]; } ],
             ];
             for (var i=0, l=ss.length; i<l; i++) {
                 var s = ss[i];
@@ -167,11 +168,11 @@ $E(MobileAgentDoCoMo, MobileAgentBase, {
         foma.replace(/^\((.*?)\)/, function (x, x2) {
             x2.split(/;/).forEach(function (y) {
                 var ss = [
-                    [/^c(\d+)$/,       function (z) { self.cache_size = z[1] } ],
-                    [/^ser(\w{15})$/,  function (z) { self.serial_number = z[1] } ],
-                    [/^icc(\w{20})$/,  function (z) { self.card_id = z[1] } ],
-                    [/^(T[CDBJ])$/,    function (z) { self.status = z[1] } ],
-                    [/^W(\d+)H(\d+)$/, function (z) { self.display_bytes = z[1]+'*'+z[2] } ],
+                    [/^c(\d+)$/,       function (z) { self.cache_size = z[1]; } ],
+                    [/^ser(\w{15})$/,  function (z) { self.serial_number = z[1]; } ],
+                    [/^icc(\w{20})$/,  function (z) { self.card_id = z[1]; } ],
+                    [/^(T[CDBJ])$/,    function (z) { self.status = z[1]; } ],
+                    [/^W(\d+)H(\d+)$/, function (z) { self.display_bytes = z[1]+'*'+z[2]; } ],
                 ];
                 for (var i=0, l=ss.length; i<l; i++) {
                     var s = ss[i];
